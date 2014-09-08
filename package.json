@@ -41,6 +41,6 @@
     "skynet.im"
   ],
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js --http"
   }
 }
