@@ -6,11 +6,11 @@ var config = require('./config');
 program
   .version(pjson.version)
   .option('-e, --environment <', 'Set the environment (defaults to development, override with NODE_ENV)')
-  .option('--http-port <n>', 'Set the HTTP port (defaults to 3000)')
-  .option('--https-port <n>', 'Set the HTTP port (defaults to null)')
-  .option('--mqtt-port <n>', 'Set the MQTT port (defaults to 1883)')
-  .option('--coap-port <n>', 'Set the CoAP port (defaults to 5683)')
-  .option('--http', 'Enable HTTP server (defaults to true)')
+  // .option('--http-port <n>', 'Set the HTTP port (defaults to 3000)')
+  // .option('--https-port <n>', 'Set the HTTP port (defaults to null)')
+  // .option('--mqtt-port <n>', 'Set the MQTT port (defaults to 1883)')
+  // .option('--coap-port <n>', 'Set the CoAP port (defaults to 5683)')
+  .option('--http', 'Enable HTTP server (defaults to false)')
   .option('--https', 'Enable HTTPS server (defaults to false)')
   .option('--coap', 'Enable CoAP server (defaults to false)')
   .option('--mqtt', 'Enable MQTT server (defaults to false)')
@@ -18,16 +18,16 @@ program
   .parse(process.argv);
 
 // Defaults
-program.environment = program.environment || process.env.NODE_ENV || 'development'
-program.coapPort    = program.coapPort || 5683
-program.httpPort    = program.httpPort || 3000
-program.httpsPort   = program.httpsPort || 4000
-program.mqttPort    = program.mqttPort || 1883
-program.coap        = program.coap || false
-program.http        = program.http || true
-program.https       = program.https || false
-program.mqtt        = program.mqtt || false
-program.mdns        = program.mdns || false
+program.environment = program.environment || process.env.NODE_ENV || 'development';
+// program.coapPort    = program.coapPort || 5683;
+// program.httpPort    = program.httpPort || 3000;
+// program.httpsPort   = program.httpsPort || 4000;
+// program.mqttPort    = program.mqttPort || 1883;
+program.coap        = program.coap || false;
+program.http        = program.http || false;
+program.https       = program.https || false;
+program.mqtt        = program.mqtt || false;
+program.mdns        = program.mdns || false;
 
 console.log("");
 console.log("MM    MM              hh      bb      lll         ");
@@ -41,19 +41,26 @@ console.log("");
 
 if (program.mdns) {
   process.stdout.write('Starting mDNS...');
-  var mdnsServer = require('./lib/mdnsServer')(program);
+  var mdnsServer = require('./lib/mdnsServer')(config);
   mdnsServer.start();
-  console.log(' done.')
+  console.log(' done.');
 }
 
 if (program.coap) {
   process.stdout.write('Starting CoAP...');
-  var coapServer = require('./lib/coapServer')(program);
-  console.log(' done.')
+  var coapServer = require('./lib/coapServer')(config);
+  console.log(' done.');
 }
 
 if (program.http || program.https) {
   process.stdout.write('Starting HTTP/HTTPS...');
-  var httpServer = require('./lib/httpServer')(program);
-  console.log(' done.')
+  var httpServer = require('./lib/httpServer')(config);
+  console.log(' done.');
 }
+
+if (program.mqtt) {
+  process.stdout.write('Starting MQTT...');
+  var mqttServer = require('./lib/mqttServer')(config);
+  console.log(' done.');
+}
+
