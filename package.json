@@ -1,7 +1,7 @@
 {
   "name": "skynet-server",
   "description": "communications platform and api for iot",
-  "version": "0.0.1-35",
+  "version": "0.2.0",
   "author": "Chris Matthieu",
   "private": true,
   "engines": {
