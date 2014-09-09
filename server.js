@@ -3,6 +3,8 @@ var program = require('commander');
 var pjson = require('./package.json');
 var config = require('./config');
 
+var parentConnection;
+
 program
   .version(pjson.version)
   .option('-e, --environment <', 'Set the environment (defaults to development, override with NODE_ENV)')
@@ -15,6 +17,7 @@ program
   .option('--https', 'Enable HTTPS server (defaults to false)')
   .option('--mdns', 'Enable Multicast DNS (defaults to false)')
   .option('--mqtt', 'Enable MQTT server (defaults to false)')
+  .option('--parent', 'Enable Parent connection (defaults to false)')
   .parse(process.argv);
 
 // Defaults
@@ -28,6 +31,7 @@ program.http        = program.http || false;
 program.https       = program.https || false;
 program.mdns        = program.mdns || false;
 program.mqtt        = program.mqtt || false;
+program.parent      = program.parent || false;
 
 console.log("");
 console.log("MM    MM              hh      bb      lll         ");
@@ -39,15 +43,21 @@ console.log("                 sss                              ");
 console.log('\Meshblu (formerly skynet.im) %s environment loaded... ', program.environment);
 console.log("");
 
+if (program.parent) {
+  process.stdout.write('Starting Parent connection...');
+  parentConnection = require('./lib/parentConnection')(config);
+  console.log(' done.');
+}
+
 if (program.coap) {
   process.stdout.write('Starting CoAP...');
-  var coapServer = require('./lib/coapServer')(config);
+  var coapServer = require('./lib/coapServer')(config, parentConnection);
   console.log(' done.');
 }
 
 if (program.http || program.https) {
   process.stdout.write('Starting HTTP/HTTPS...');
-  var httpServer = require('./lib/httpServer')(config);
+  var httpServer = require('./lib/httpServer')(config, parentConnection);
   console.log(' done.');
 }
 
@@ -60,7 +70,7 @@ if (program.mdns) {
 
 if (program.mqtt) {
   process.stdout.write('Starting MQTT...');
-  var mqttServer = require('./lib/mqttServer')(config);
+  var mqttServer = require('./lib/mqttServer')(config, parentConnection);
   console.log(' done.');
 }
 
