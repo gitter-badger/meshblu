@@ -18,6 +18,7 @@ program
   .option('--mdns', 'Enable Multicast DNS (defaults to false)')
   .option('--mqtt', 'Enable MQTT server (defaults to false)')
   .option('--parent', 'Enable Parent connection (defaults to false)')
+  .option('--xmpp', 'Enable XMPP server (defaults to false)')
   .parse(process.argv);
 
 // Defaults
@@ -32,6 +33,7 @@ program.https       = program.https || false;
 program.mdns        = program.mdns || false;
 program.mqtt        = program.mqtt || false;
 program.parent      = program.parent || false;
+program.xmpp        = program.xmpp || false;
 
 console.log("");
 console.log("MM    MM              hh      bb      lll         ");
@@ -80,5 +82,11 @@ if (program.mdns) {
 if (program.mqtt) {
   process.stdout.write('Starting MQTT...');
   var mqttServer = require('./lib/mqttServer')(config, parentConnection);
+  console.log(' done.');
+}
+
+if (program.xmpp) {
+  process.stdout.write('Starting XMPP...');
+  var xmppServer = require('./lib/xmppServer')(config, parentConnection);
   console.log(' done.');
 }
